@@ -1,0 +1,18 @@
+# VS Code settings
+.vscode/
+
+# Byte-compiled / cache
+__pycache__/
+*.pyc
+
+# Mac OS metadata
+.DS_Store
+
+# Secrets / WiFi credentials
+secrets.py
+
+# Micropython specific files (e.g., if you compile .mpy)
+*.mpy
+
+# Logs
+*.log
