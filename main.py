@@ -78,6 +78,25 @@ def connect_mqtt():
         return None
 
 # Send the data
+def send_data(mqtt_client, temperature, humidity, lux):
+    try:
+        if mqtt_client is not None:
+            # Publish temperature and humidity
+            mqtt_client.publish(secrets['AIO_FEED_TEMPERATURE'], str(temperature))
+            mqtt_client.publish(secrets['AIO_FEED_HUMIDITY'], str(humidity))
+            print(f"Published temperature: {temperature}°C, humidity: {humidity}%")
+            
+            # Publish LUX value
+            mqtt_client.publish(secrets['AIO_FEED_LIGHT'], str(lux))
+            print(f"Published LUX: {lux}")
+
+            # Publish weather condition based on LUX value
+            weather_condition = lux_to_weather_condition(lux)
+            mqtt_client.publish(secrets['AIO_FEED_WEATHER'], str(weather_condition))
+        else:
+            print("MQTT client is not connected.")
+    except Exception as e:
+        print("Error sending data:", e)
 
 # Translate LUX value to corresponding weather condition
 # Need further refinement based on actual LUX values and conditions
@@ -105,5 +124,13 @@ def main():
     while True:
         temperature, humidity = read_dht22()
         lux = read_lux()
+        weather_condition = lux_to_weather_condition(lux)
 
     # Send the data to the MQTT broker
+        if temperature is not None and humidity is not None and lux is not None:
+            send_data(mqtt_client, temperature, humidity, lux, weather_condition)
+        else:
+            print("Failed to read sensor data.")
+
+        # Wait before the next reading
+        time.sleep(10)
