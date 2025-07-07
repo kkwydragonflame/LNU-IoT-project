@@ -157,4 +157,4 @@ This project will hopefully achieve its goal of providing real-time greenhouse d
 
 **Photos**: (to be added later)
 
-**Code Repository**: link to GitHub repo to be added.
+**Code Repository**: [GitHub](https://github.com/kkwydragonflame/LNU-IoT-project)
