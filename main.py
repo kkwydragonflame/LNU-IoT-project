@@ -68,8 +68,7 @@ def connect_wifi():
 def connect_mqtt():
     try:
         from umqtt.simple import MQTTClient
-        client = MQTTClient(secrets['AIO_USER'], secrets['AIO_SERVER'],
-                            port=secrets['AIO_PORT'],
+        client = MQTTClient(server=secrets['AIO_SERVER'], port=secrets['AIO_PORT'],
                             user=secrets['AIO_USER'], password=secrets['AIO_KEY'])
         client.connect()
         print("Connected to MQTT broker")
@@ -79,6 +78,20 @@ def connect_mqtt():
         return None
 
 # Send the data
+
+# Translate LUX value to corresponding weather condition
+# Need further refinement based on actual LUX values and conditions
+def lux_to_weather_condition(lux):
+    if lux < 100:
+        return "Night"
+    elif lux < 1000:
+        return "Overcast"
+    elif lux < 10000:
+        return "Cloudy"
+    elif lux < 20000:
+        return "Partly Cloudy"
+    else:
+        return "Sunny"
 
 # Main loop
 def main():
