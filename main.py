@@ -5,11 +5,11 @@ import TSL2591
 
 # Set up the temperature/humidity sensor pin (DHT22)
 dht_pin = Pin(15, Pin.IN, Pin.PULL_UP)  # Use GPIO 15 for DHT22
-
-# Set up the DHT22 sensor
 dht_sensor = dht.DHT22(dht_pin)
 
 # Set up the LUX sensor (TSL2591)
+i2c_pin = I2C(0, scl=Pin(1), sda=Pin(0)) # Use GPIO 1 for SCL and GPIO 0 for SDA
+lux_sensor = TSL2591.TSL2591(i2c_pin)
 
 # Function to read the temperature and humidity from the DHT22 sensor
 def read_dht22():
@@ -23,6 +23,13 @@ def read_dht22():
         return None, None
 
 # Function to read the LUX from the TSL2591 sensor
+def read_lux():
+    try:
+        lux = lux_sensor.lux()
+        return lux
+    except Exception as e:
+        print("Error reading TSL2591:", e)
+        return None
 
 # Connect to Wi-Fi
 
@@ -38,5 +45,6 @@ def main():
     # Read sensors
     while True:
         temperature, humidity = read_dht22()
+        lux = read_lux()
 
     # Send the data to the MQTT broker
