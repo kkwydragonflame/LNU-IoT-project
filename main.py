@@ -11,6 +11,13 @@ dht_sensor = dht.DHT22(dht_pin)
 i2c_pin = I2C(0, scl=Pin(1), sda=Pin(0)) # Use GPIO 1 for SCL and GPIO 0 for SDA
 lux_sensor = TSL2591.TSL2591(i2c_pin)
 
+# Import secrets for Wi-Fi and MQTT credentials
+try:
+    from secrets import secrets
+except ImportError:
+    print("secrets.py not found. Please create it with your Wi-Fi and MQTT credentials.")
+    raise
+
 # Function to read the temperature and humidity from the DHT22 sensor
 def read_dht22():
     try:
@@ -32,6 +39,15 @@ def read_lux():
         return None
 
 # Connect to Wi-Fi
+def connect_wifi():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    if not wlan.isconnected():
+        print("Connecting to Wi-Fi...")
+        wlan.connect(secrets['ssid'], secrets['password'])
+        while not wlan.isconnected():
+            time.sleep(1)
+    print("Connected to Wi-Fi:", wlan.ifconfig())
 
 # Connect to MQTT broker
 
@@ -40,6 +56,8 @@ def read_lux():
 # Main loop
 def main():
     # Connect to Wi-Fi
+    connect_wifi()
+    
     # Connect to MQTT broker
 
     # Read sensors
