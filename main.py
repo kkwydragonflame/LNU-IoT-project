@@ -40,16 +40,43 @@ def read_lux():
 
 # Connect to Wi-Fi
 def connect_wifi():
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    if not wlan.isconnected():
-        print("Connecting to Wi-Fi...")
-        wlan.connect(secrets['ssid'], secrets['password'])
-        while not wlan.isconnected():
-            time.sleep(1)
-    print("Connected to Wi-Fi:", wlan.ifconfig())
+    try:
+        wlan = network.WLAN(network.STA_IF)
+        wlan.active(True)
+        if not wlan.isconnected():
+            print("Connecting to Wi-Fi...")
+            wlan.connect(secrets['ssid'], secrets['password'])
+            
+            # Add timeout to prevent infinite waiting
+            max_wait = 10
+            while max_wait > 0:
+                if wlan.isconnected():
+                    break
+                max_wait -= 1
+                time.sleep(1)
+            
+            if not wlan.isconnected():
+                raise Exception("Failed to connect to Wi-Fi")
+                
+        print("Connected to Wi-Fi:", wlan.ifconfig())
+        return True
+    except Exception as e:
+        print("Wi-Fi connection error:", e)
+        return False
 
 # Connect to MQTT broker
+def connect_mqtt():
+    try:
+        from umqtt.simple import MQTTClient
+        client = MQTTClient(secrets['AIO_USER'], secrets['AIO_SERVER'],
+                            port=secrets['AIO_PORT'],
+                            user=secrets['AIO_USER'], password=secrets['AIO_KEY'])
+        client.connect()
+        print("Connected to MQTT broker")
+        return client
+    except Exception as e:
+        print("MQTT connection error:", e)
+        return None
 
 # Send the data
 
@@ -57,8 +84,9 @@ def connect_wifi():
 def main():
     # Connect to Wi-Fi
     connect_wifi()
-    
+
     # Connect to MQTT broker
+    mqtt_client = connect_mqtt()
 
     # Read sensors
     while True:
