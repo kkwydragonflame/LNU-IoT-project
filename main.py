@@ -8,8 +8,8 @@ dht_pin = Pin(15, Pin.IN, Pin.PULL_UP)  # Use GPIO 15 for DHT22
 dht_sensor = dht.DHT22(dht_pin)
 
 # Set up the LUX sensor (TSL2591)
-i2c_pin = I2C(0, scl=Pin(1), sda=Pin(0)) # Use GPIO 1 for SCL and GPIO 0 for SDA
-lux_sensor = TSL2591.TSL2591(i2c_pin)
+# i2c_pin = I2C(0, scl=Pin(1), sda=Pin(0)) # Use GPIO 1 for SCL and GPIO 0 for SDA
+# lux_sensor = TSL2591.TSL2591(i2c_pin)
 
 # Import secrets for Wi-Fi and MQTT credentials
 try:
@@ -68,8 +68,11 @@ def connect_wifi():
 def connect_mqtt():
     try:
         from umqtt.simple import MQTTClient
-        client = MQTTClient(server=secrets['AIO_SERVER'], port=secrets['AIO_PORT'],
-                            user=secrets['AIO_USER'], password=secrets['AIO_KEY'])
+        client = MQTTClient(client_id=secrets['AIO_USER'], 
+                            server=secrets['AIO_SERVER'], 
+                            port=secrets['AIO_PORT'],
+                            user=secrets['AIO_USER'], 
+                            password=secrets['AIO_KEY'])
         client.connect()
         print("Connected to MQTT broker")
         return client
@@ -78,7 +81,8 @@ def connect_mqtt():
         return None
 
 # Send the data
-def send_data(mqtt_client, temperature, humidity, lux):
+#def send_data(mqtt_client, temperature, humidity, lux):
+def send_data(mqtt_client, temperature, humidity):
     try:
         if mqtt_client is not None:
             # Publish temperature and humidity
@@ -87,12 +91,12 @@ def send_data(mqtt_client, temperature, humidity, lux):
             print(f"Published temperature: {temperature}°C, humidity: {humidity}%")
             
             # Publish LUX value
-            mqtt_client.publish(secrets['AIO_FEED_LIGHT'], str(lux))
-            print(f"Published LUX: {lux}")
+            # mqtt_client.publish(secrets['AIO_FEED_LIGHT'], str(lux))
+            # print(f"Published LUX: {lux}")
 
-            # Publish weather condition based on LUX value
-            weather_condition = lux_to_weather_condition(lux)
-            mqtt_client.publish(secrets['AIO_FEED_WEATHER'], str(weather_condition))
+            # # Publish weather condition based on LUX value
+            # weather_condition = lux_to_weather_condition(lux)
+            # mqtt_client.publish(secrets['AIO_FEED_WEATHER'], str(weather_condition))
         else:
             print("MQTT client is not connected.")
     except Exception as e:
@@ -123,14 +127,20 @@ def main():
     # Read sensors
     while True:
         temperature, humidity = read_dht22()
-        lux = read_lux()
-        weather_condition = lux_to_weather_condition(lux)
+        # lux = read_lux()
+        # weather_condition = lux_to_weather_condition(lux)
 
     # Send the data to the MQTT broker
-        if temperature is not None and humidity is not None and lux is not None:
-            send_data(mqtt_client, temperature, humidity, lux, weather_condition)
+        #if temperature is not None and humidity is not None and lux is not None:
+        if temperature is not None and humidity is not None:
+            # send_data(mqtt_client, temperature, humidity, lux, weather_condition)
+            send_data(mqtt_client, temperature, humidity)
         else:
             print("Failed to read sensor data.")
 
         # Wait before the next reading
         time.sleep(10)
+
+# Run the main function
+if __name__ == '__main__':
+    main()
