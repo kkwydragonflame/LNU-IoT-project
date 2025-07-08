@@ -92,13 +92,15 @@ These are the neccessary libraries for this project. Make sure you `import` thes
 ## Putting Everything Together
 
 ![Breadboard testing setup](images/IMG_20250707_145140931_HDR.jpg)
+*Breadboard testing setup.*
 
 **Connections**:
 
 - **DHT22**: Data pin to GPIO15, powered by 3.3V and GND
 - **TSL2591**: SDA to GPIO2, SCL to GPIO3, powered by 3.3V and GND
 
-**Circuit Diagram**: (Fritzing diagram to be added)
+**Circuit Diagram**:  
+![Fritzing circuit diagram](images/Fritzing%20circuit%20diagram.jpg)
 
 **Note**:
 
@@ -166,10 +168,12 @@ While Wi-Fi is convenient, range is an issue in an outdoor greenhouse. A mesh Wi
 
 ## Presenting the Data
 
+See the data live [here](https://io.adafruit.com/je224gs/dashboards/iot-project)!
+
 **Dashboard**: Built in Adafruit IO
 
 - Graphs and gauges for each feed
-- Retains data history for days/weeks (depending on tier)
+- Retains data history for 30 days (free tier)
 - Dashboards are customizable and sharable
 
 **Database**: Cloud storage provided by Adafruit
@@ -189,7 +193,6 @@ Using Adafruit IO simplified the visualization process, but for longer data rete
 - Try long-range LoRa for improved connectivity
 - Setup custom MIG stack for longer data retention
 - Add solar charging system for sustainable battery operation
-
-**Photos**: (to be added later)
+- Add alerts for high temperatures.
 
 **Code Repository**: [GitHub](https://github.com/kkwydragonflame/LNU-IoT-project)
