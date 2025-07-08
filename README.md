@@ -100,7 +100,7 @@ These are the neccessary libraries for this project. Make sure you `import` thes
 - **TSL2591**: SDA to GPIO2, SCL to GPIO3, powered by 3.3V and GND
 
 **Circuit Diagram**:  
-![Fritzing circuit diagram](images/Fritzing%20circuit%20diagram.jpg)
+![Fritzing circuit diagram](images/Fritzing_circuit_diagram.jpg)
 
 **Note**:
 
@@ -175,6 +175,8 @@ See the data live [here](https://io.adafruit.com/je224gs/dashboards/iot-project)
 - Graphs and gauges for each feed
 - Retains data history for 30 days (free tier)
 - Dashboards are customizable and sharable
+
+![Dashboard_image](images/Dashboard_image.jpg)
 
 **Database**: Cloud storage provided by Adafruit
 
