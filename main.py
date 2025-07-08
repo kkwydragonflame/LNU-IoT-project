@@ -10,6 +10,43 @@ dht_sensor = dht.DHT22(dht_pin)
 # Set up the LUX sensor (TSL2591)
 # i2c_pin = I2C(0, scl=Pin(1), sda=Pin(0)) # Use GPIO 1 for SCL and GPIO 0 for SDA
 # lux_sensor = TSL2591.TSL2591(i2c_pin)
+try:
+    print("Setting up I2C bus...")
+    i2c_pin = I2C(1, scl=Pin(3), sda=Pin(2), freq=100000) # Use GPIO 1 for SCL and GPIO 0 for SDA, slower freq
+    
+    # Scan for I2C devices to debug
+    print("Scanning I2C bus for any devices...")
+    devices = i2c_pin.scan()
+    print("Found I2C devices:", [hex(device) for device in devices])
+    
+    if devices:
+        print(f"Great! Found {len(devices)} device(s)")
+        # Check if TSL2591 is at expected address
+        if 0x29 in devices:
+            print("TSL2591 found at expected address 0x29")
+        else:
+            print("TSL2591 not at 0x29, but other devices found")
+            print("Addresses found:", [hex(d) for d in devices])
+    else:
+        print("No I2C devices detected. Checking connections...")
+        print("Expected connections:")
+        print("  TSL2591 VCC -> Pico 3.3V")
+        print("  TSL2591 GND -> Pico GND") 
+        print("  TSL2591 SDA -> Pico GPIO 0")
+        print("  TSL2591 SCL -> Pico GPIO 1")
+    
+    # Try to initialize the TSL2591 sensor
+    if 0x29 in devices:
+        lux_sensor = TSL2591.TSL2591(i2c_pin)
+        print("TSL2591 sensor initialized successfully!")
+    else:
+        print("TSL2591 not found, running without light sensor")
+        lux_sensor = None
+        
+except Exception as e:
+    print("Error initializing TSL2591 sensor:", e)
+    print("Running without light sensor...")
+    lux_sensor = None
 
 # Import secrets for Wi-Fi and MQTT credentials
 try:
@@ -32,7 +69,9 @@ def read_dht22():
 # Function to read the LUX from the TSL2591 sensor
 def read_lux():
     try:
-        lux = lux_sensor.lux()
+        if lux_sensor is None:
+            return None
+        lux = lux_sensor.lux
         return lux
     except Exception as e:
         print("Error reading TSL2591:", e)
@@ -81,8 +120,8 @@ def connect_mqtt():
         return None
 
 # Send the data
-#def send_data(mqtt_client, temperature, humidity, lux):
-def send_data(mqtt_client, temperature, humidity):
+def send_data(mqtt_client, temperature, humidity, lux):
+#def send_data(mqtt_client, temperature, humidity):
     try:
         if mqtt_client is not None:
             # Publish temperature and humidity
@@ -91,12 +130,12 @@ def send_data(mqtt_client, temperature, humidity):
             print(f"Published temperature: {temperature}°C, humidity: {humidity}%")
             
             # Publish LUX value
-            # mqtt_client.publish(secrets['AIO_FEED_LIGHT'], str(lux))
-            # print(f"Published LUX: {lux}")
+            mqtt_client.publish(secrets['AIO_FEED_LIGHT'], str(lux))
+            print(f"Published LUX: {lux}")
 
-            # # Publish weather condition based on LUX value
-            # weather_condition = lux_to_weather_condition(lux)
-            # mqtt_client.publish(secrets['AIO_FEED_WEATHER'], str(weather_condition))
+            # Publish weather condition based on LUX value
+            weather_condition = lux_to_weather_condition(lux)
+            mqtt_client.publish(secrets['AIO_FEED_WEATHER'], str(weather_condition))
         else:
             print("MQTT client is not connected.")
     except Exception as e:
@@ -127,14 +166,19 @@ def main():
     # Read sensors
     while True:
         temperature, humidity = read_dht22()
-        # lux = read_lux()
+        lux = read_lux()
         # weather_condition = lux_to_weather_condition(lux)
 
     # Send the data to the MQTT broker
-        #if temperature is not None and humidity is not None and lux is not None:
         if temperature is not None and humidity is not None:
-            # send_data(mqtt_client, temperature, humidity, lux, weather_condition)
-            send_data(mqtt_client, temperature, humidity)
+            # Only send lux data if sensor is working
+            if lux is not None:
+                send_data(mqtt_client, temperature, humidity, lux)
+            else:
+                # Send only temp/humidity if lux sensor not working
+                mqtt_client.publish(secrets['AIO_FEED_TEMPERATURE'], str(temperature))
+                mqtt_client.publish(secrets['AIO_FEED_HUMIDITY'], str(humidity))
+                print(f"Published temperature: {temperature}°C, humidity: {humidity}% (no lux sensor)")
         else:
             print("Failed to read sensor data.")
 
