@@ -51,16 +51,39 @@ This kit includes many of the components listed below (not included is the DHT22
 
 ## Computer Setup
 
-**IDE**: Visual Studio Code (VSC)
+**IDE**: Visual Studio Code (VSC)  
+Make sure you have this installed before proceeding to the next steps.
 
 **Steps**:
 
-1. Flash the Raspberry Pi Pico W with MicroPython firmware from micropython.org
-2. Install the PyMakr plugin in VS Code
-3. Set up PyMakr to connect to the correct COM port
-4. Upload files directly to the Pico using PyMakr
+1. **Flashing the Raspberry Pi Pico W with MicroPython**
+    1. Download the firmware from the official site [micropython.org](https://micropython.org/download/rp2-pico-w/)  
+    Direct link to file [here](https://micropython.org/resources/firmware/RPI_PICO_W-20250415-v1.25.0.uf2)
+    2. While holding the **BOOTSEL** button on your Pico connect the USB-cable from your Pico to your computer. You can release the button after connecting.
+    3. Your Pico should appear as a removable USB drive in your file system.
+    4. Copy the uf2 firmware file to this drive.
+    5. Wait until the drive disappears from your system. Your Pico should now be updated.  
+    (To verify you can reconnect the usb-cable, your pico should not appear in your file system.) 
 
-**Dependencies**:
+3. **Setting up PyMakr in Visual Studio Code**
+    1. Open VSC and install the PyMakr extension.
+        - Open the Extensions panel (Ctrl+Shift+X)
+        - Search for “PyMakr” and install it (by Pycom)
+    2. Connect your Pico W
+        - Navigate to the PyMakr tab.
+        - Plug in your Raspberry Pico W while taking a look at the list of devices. The new device that pops up will be the Pico.
+        - Hover your mouse over the device and press the lightning button to connect the Pico.
+        - After the board is connected, hover over the device again and now press the terminal button to upen up a terminal.
+        - You can test your device connection by typing print("Welcome!") after the >>>   
+        You should see the same message printed back to you in the terminal.
+3. **Upload files** directly to the Pico using PyMakr by hovering over the device and clicking the upload button.  
+
+**Can't upload files?**  
+With the terminal active hold CTRL + C. This will stop any code running on your Pico.  
+Reboot can be done by holding CTRL + D.
+
+**Dependencies**:  
+These are the neccessary libraries for this project. Make sure you `import` these in your `main.py`
 
 - `dht.py` for DHT22
 - `TSL2591.py` from [Baelcorvus' repo](https://github.com/Baelcorvus/TSL2591-Micropython-I2C-Library-for-pico)
@@ -68,18 +91,21 @@ This kit includes many of the components listed below (not included is the DHT22
 
 ## Putting Everything Together
 
+![Breadboard testing setup](images/IMG_20250707_145140931_HDR.jpg)
+
 **Connections**:
 
 - **DHT22**: Data pin to GPIO15, powered by 3.3V and GND
-- **TSL2591**: SDA to GPIO0, SCL to GPIO1, powered by 3.3V and GND
+- **TSL2591**: SDA to GPIO2, SCL to GPIO3, powered by 3.3V and GND
 
 **Circuit Diagram**: (Fritzing diagram to be added)
 
 **Note**:
 
-- Both sensors use digital interfaces (I2C, single-wire)
-- No extra resistors needed for this setup
-- I2C devices must not share conflicting addresses
+- Both sensors use digital interfaces (I2C for TSL2591, single-wire digital for DHT22)
+- The DHT22 requires a 10kΩ pull-up resistor connected between the data pin and VCC (3.3V). This resistor ensures the data line is pulled to a high logic level (3.3V) when not actively driven low by the sensor, preventing floating states and ensuring reliable digital communication
+- TSL2591 uses I2C protocol with built-in pull-up resistors on the Pico, so no external resistors needed
+- I2C devices must not share conflicting addresses (TSL2591 uses address 0x29)
 
 ## Platform
 
@@ -91,9 +117,9 @@ This kit includes many of the components listed below (not included is the DHT22
 - Free tier is sufficient for small projects
 - Clean dashboard interface
 
-**Alternatives considered**: MIG stack (would require backend setup, so I skipped that)
+**Alternatives considered**: MIG stack (MQTT - Influx - Grafana) but that would require additional backend setup, so I skipped that.
 
-Adafruit IO handles MQTT feed creation, data retention, and offers automation rules and public dashboards.
+Adafruit IO handles MQTT feed creation, data retention (30 days for free tier), and offers automation rules and public dashboards.
 
 ## The Code
 
@@ -148,18 +174,21 @@ While Wi-Fi is convenient, range is an issue in an outdoor greenhouse. A mesh Wi
 
 **Database**: Cloud storage provided by Adafruit
 
-**Automation**: Adafruit IO supports triggers, such as email alerts if temp exceeds threshold (not implemented yet).
+**Automation**: Adafruit IO supports triggers, such as email alerts if temp exceeds threshold and Discord notifications.
 
 ## Finalizing the Design
 
-**Final Thoughts**:
-This project will hopefully achieve its goal of providing real-time greenhouse data over the summer. The setup is reliable, extensible, and beginner-friendly. Using Adafruit IO simplified the visualization process.
+**Final Thoughts**:  
+This project will hopefully achieve its goal of providing real-time greenhouse data over the summer. The setup is reliable, extensible, and beginner-friendly.  
+Using Adafruit IO simplified the visualization process, but for longer data retention I will setup a custom MIG stack backend.
 
 **Future Improvements**:
 
 - Add battery power and deep sleep
 - Add soil moisture sensor and rain sensor
 - Try long-range LoRa for improved connectivity
+- Setup custom MIG stack for longer data retention
+- Add solar charging system for sustainable battery operation
 
 **Photos**: (to be added later)
 
