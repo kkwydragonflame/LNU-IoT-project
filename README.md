@@ -19,15 +19,21 @@ The system also provides a great learning opportunity for working with sensors, 
 
 ## Material
 
+I bought the course recommended starter kit from [Freenove](https://www.amazon.se/Freenove-Raspberry-Dual-core-Cortex-M0-Microcontroller/dp/B0BJ1QC6X8/ref=asc_df_B0BJ1QC6X8/?th=1). The cost is around ~360 SEK.
 
-| Item | Purpose | Where Purchased | Cost |
-| -------- | -------- | -------- | -------- |
-| Raspberry Pi Pico W     | Main microcontroller     | Electrokit | ~89 SEK     |
-| DHT22 sensor | Temp and humidity sensor | Electrokit | ~99 SEK |
-| TSL2591 light sensor | Light intensity (lux) sensor | Electrokit | ~109 SEK |
-| Breadboard & jumper wires | Circuit prototyping | Electrokit | ~50 SEK |
-| USB cable | Programming and power | Already owned | – |
-| Power bank (optional) | Portable deployment power source | Already owned | – |
+This kit includes many of the components listed below (not included is the DHT22 and TSL2591), but if you simply want to build this particular project you only need what is listed below.
+
+
+| Image | Item | Purpose | Where Purchased | Cost |
+| -------- | -------- | -------- | -------- | -------- |
+| ![Pico W](images/pico_w.png) | Raspberry Pi Pico W     | Main microcontroller     | Electrokit | ~89 SEK     |
+| ![DHT22](images/41009796.jpg) | DHT22 sensor | Temp and humidity sensor | Electrokit | ~99 SEK |
+| ![TSL2591](images/41016275.jpg) | TSL2591 light sensor | Light intensity (lux) sensor | Electrokit | ~109 SEK |
+| ![Resistor](images/10kohmresistor.png) | 10kΩ Resistor | Used as a pull-up resistor for DHT22 | Electrokit | ~1 SEK  |
+| ![Breadboard](images/10160840.jpg) | Breadboard | Circuit prototyping | Electrokit | ~70 SEK |
+|  ![Jumper wires](images/jumper_wires.png) | Jumper wires | Circuit prototyping | Electrokit | ~45 SEK  |
+| ![USB Cable](images/usb_cable.png) | USB-A to Micro-USB Cable | Programming and power | Electrokit | ~40 SEK |
+| – | Power bank (optional) | Portable deployment power source | Already owned | – |
 
 **Sensor Specs**:
 
