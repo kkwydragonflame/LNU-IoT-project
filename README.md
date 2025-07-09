@@ -125,31 +125,39 @@ Adafruit IO handles MQTT feed creation, data retention (30 days for free tier), 
 
 ## The Code
 
+**Code Repository**: [GitHub](https://github.com/kkwydragonflame/LNU-IoT-project)
+
 **Core functionality**:
 ```python
-from umqtt.simple import MQTTClient
-import dht
-import network
-from tsl2591 import TSL2591
-import time
+# Main loop
+def main():
+    # Connect to Wi-Fi
+    connect_wifi()
 
-sensor = dht.DHT22(machine.Pin(15))
-tsl = TSL2591()
+    # Connect to MQTT broker
+    mqtt_client = connect_mqtt()
 
-client = MQTTClient("client_id", "io.adafruit.com", user="AIO_USERNAME", password="AIO_KEY")
-client.connect()
+    # Read sensors
+    while True:
+        temperature, humidity = read_dht22()
+        lux = read_lux()
+        weather_condition = lux_to_weather_condition(lux)
 
-while True:
-    sensor.measure()
-    temp = sensor.temperature()
-    hum = sensor.humidity()
-    lux = tsl.lux()
+    # Send the data to the MQTT broker
+        if temperature is not None and humidity is not None:
+            # Only send lux data if sensor is working
+            if lux is not None:
+                send_data(mqtt_client, temperature, humidity, lux, weather_condition)
+            else:
+                # Send only temp/humidity if lux sensor not working
+                mqtt_client.publish(secrets['AIO_FEED_TEMPERATURE'], str(temperature))
+                mqtt_client.publish(secrets['AIO_FEED_HUMIDITY'], str(humidity))
+                print(f"Published temperature: {temperature}°C, humidity: {humidity}% (no lux sensor)")
+        else:
+            print("Failed to read sensor data.")
 
-    client.publish(b"AIO_USERNAME/feeds/temperature", str(temp))
-    client.publish(b"AIO_USERNAME/feeds/humidity", str(hum))
-    client.publish(b"AIO_USERNAME/feeds/lux", str(lux))
-
-    time.sleep(10)
+        # Wait before the next reading
+        time.sleep(10)
 ```
 - Wi-Fi connected using `network.WLAN`
 - MQTT via `umqtt.simple`
@@ -196,5 +204,3 @@ Using Adafruit IO simplified the visualization process, but for longer data rete
 - Setup custom MIG stack for longer data retention
 - Add solar charging system for sustainable battery operation
 - Add alerts for high temperatures.
-
-**Code Repository**: [GitHub](https://github.com/kkwydragonflame/LNU-IoT-project)

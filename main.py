@@ -121,7 +121,6 @@ def connect_mqtt():
 
 # Send the data
 def send_data(mqtt_client, temperature, humidity, lux):
-#def send_data(mqtt_client, temperature, humidity):
     try:
         if mqtt_client is not None:
             # Publish temperature and humidity
@@ -146,11 +145,11 @@ def send_data(mqtt_client, temperature, humidity, lux):
 def lux_to_weather_condition(lux):
     if lux < 100:
         return "Night"
-    elif lux < 1000:
+    elif lux < 400:
         return "Overcast"
-    elif lux < 10000:
+    elif lux < 1000:
         return "Cloudy"
-    elif lux < 20000:
+    elif lux < 2000:
         return "Partly Cloudy"
     else:
         return "Sunny"
@@ -167,13 +166,13 @@ def main():
     while True:
         temperature, humidity = read_dht22()
         lux = read_lux()
-        # weather_condition = lux_to_weather_condition(lux)
+        weather_condition = lux_to_weather_condition(lux)
 
     # Send the data to the MQTT broker
         if temperature is not None and humidity is not None:
             # Only send lux data if sensor is working
             if lux is not None:
-                send_data(mqtt_client, temperature, humidity, lux)
+                send_data(mqtt_client, temperature, humidity, lux, weather_condition)
             else:
                 # Send only temp/humidity if lux sensor not working
                 mqtt_client.publish(secrets['AIO_FEED_TEMPERATURE'], str(temperature))
