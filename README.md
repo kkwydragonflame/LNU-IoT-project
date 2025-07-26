@@ -119,7 +119,7 @@ These are the neccessary libraries for this project. Make sure you `import` thes
 - Free tier is sufficient for small projects
 - Clean dashboard interface
 
-**Alternatives considered**: MIG stack (MQTT - Influx - Grafana) but that would require additional backend setup, so I skipped that.
+**Alternatives considered**: TIG stack (Telegraf - Influx - Grafana) but that would require additional backend setup, so I skipped that.
 
 Adafruit IO handles MQTT feed creation, data retention (30 days for free tier), and offers automation rules and public dashboards.
 
@@ -194,13 +194,13 @@ See the data live [here](https://io.adafruit.com/je224gs/dashboards/iot-project)
 
 **Final Thoughts**:  
 This project will hopefully achieve its goal of providing real-time greenhouse data over the summer. The setup is reliable, extensible, and beginner-friendly.  
-Using Adafruit IO simplified the visualization process, but for longer data retention I will setup a custom MIG stack backend.
+Using Adafruit IO simplified the visualization process, but for longer data retention I will setup a custom TIG stack backend.
 
 **Future Improvements**:
 
 - Add battery power and deep sleep
 - Add soil moisture sensor and rain sensor
 - Try long-range LoRa for improved connectivity
-- Setup custom MIG stack for longer data retention
+- Setup custom TIG stack for longer data retention
 - Add solar charging system for sustainable battery operation
 - Add alerts for high temperatures.
