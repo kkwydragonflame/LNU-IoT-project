@@ -71,6 +71,8 @@ def read_lux():
     try:
         if lux_sensor is None:
             return None
+        ch0, ch1 = lux_sensor.raw_luminosity()
+        print("Raw luminosity - CH0:", ch0, "CH1:", ch1)
         lux = lux_sensor.lux
         return lux
     except Exception as e:
