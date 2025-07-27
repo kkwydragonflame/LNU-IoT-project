@@ -71,7 +71,7 @@ def read_lux():
     try:
         if lux_sensor is None:
             return None
-        ch0, ch1 = lux_sensor.raw_luminosity()
+        ch0, ch1 = lux_sensor.raw_luminosity
         print("Raw luminosity - CH0:", ch0, "CH1:", ch1)
         lux = lux_sensor.lux
         return lux
@@ -145,7 +145,9 @@ def send_data(mqtt_client, temperature, humidity, lux):
 # Translate LUX value to corresponding weather condition
 # Need further refinement based on actual LUX values and conditions
 def lux_to_weather_condition(lux):
-    if lux < 100:
+    if lux is None:
+        return "Unknown"
+    elif lux < 100:
         return "Night"
     elif lux < 400:
         return "Overcast"
@@ -174,7 +176,7 @@ def main():
         if temperature is not None and humidity is not None:
             # Only send lux data if sensor is working
             if lux is not None:
-                send_data(mqtt_client, temperature, humidity, lux, weather_condition)
+                send_data(mqtt_client, temperature, humidity, lux)
             else:
                 # Send only temp/humidity if lux sensor not working
                 mqtt_client.publish(secrets['AIO_FEED_TEMPERATURE'], str(temperature))
